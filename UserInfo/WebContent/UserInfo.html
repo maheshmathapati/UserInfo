@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html >
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"></script>
+  <head>
+    <meta charset="UTF-8">
+    <title>Data Table</title>
+    
+        <link rel="stylesheet" href="css/style.css">
+    
+  </head>
+  <body>
+<head>
+	<meta charset="utf-8" />
+	<title>Table Style</title>
+	<meta name="viewport" content="initial-scale=1.0; maximum-scale=1.0; width=device-width;">
+</head>
+
+<body>
+<div id="addUser" class="add-user">
+<a href="javascript:toggleVisibility();">Add User</a>
+<script type="text/javascript">
+function toggleVisibility()
+{
+	var nameTextBox = document.getElementById("name");
+	var numberTextBox = document.getElementById("number");
+	var addressTextBox = document.getElementById("address");
+	var submitButton = document.getElementById("submitButton");
+ 	
+	if(nameTextBox.style.visibility == "" || 
+			nameTextBox.style.visibility == "visible")
+		{
+			nameTextBox.style.visibility = "collapse";
+			numberTextBox.style.visibility = "collapse";
+			addressTextBox.style.visibility = "collapse";
+			submitButton.style.visibility = "collapse";
+		}
+	else
+		{
+			nameTextBox.style.visibility = "visible";
+			numberTextBox.style.visibility = "visible";
+			addressTextBox.style.visibility = "visible";
+			submitButton.style.visibility = "visible";
+		}
+ 	}
+</script>
+</div>
+<div  id="uielements" class="table-title">
+<input type="text" id="name" value="Enter Name...">
+<input type="text" id="number" value="Enter Number...">
+<input type="text" id="address" value="Enter Address...">
+<button type="button" id="submitButton" onclick="submitAction()">Submit</button>
+<script type="text/javascript">
+	function submitAction()
+	{
+		var name = document.getElementById("name").value;
+		var number = document.getElementById("number").value;
+		var address = document.getElementById("address").value;
+		var URL = "/userinfo/resources/userinfo?name="+name+"&number="+number;
+		jQuery.ajax(
+		          {
+		              url : URL,
+		              type : "POST",
+		              contentType : "text/plain",
+		              cache:false,
+		              data : address,
+		              success : function(returndata,status,xhr)
+		              {                            
+		                  window.location.href= window.location.href; 
+		              },
+		              error :  function(  jqXHR,  textStatus,  errorThrown ){
+		                 alert("error in log web service");
+		                 alert("status "+textStatus);
+		                 alert("Error thrown "+errorThrown);
+		              }
+		          }
+		      );
+	}
+</script>
+</div>
+<div class="table-title">
+<h3>User Table</h3>
+</div>
+<table class="table-fill" id="userTable">
+<thead>
+<tr>
+<th class="text-left">ID</th>
+<th class="text-left">Name</th>
+<th class="text-left">Contact Number</th>
+<th class="text-left">Address</th>
+</tr>
+</thead>
+</table>
+  </body>
+  </body>
+  <script>
+  toggleVisibility();
+  jQuery.ajax(
+          {
+              url : "/userinfo/resources/userinfo",
+              type : "GET",
+              contentType : "application/xml",
+              cache:false,
+              success : function(returndata,status,xhr)
+              {                            
+            	  renderUserTable(returndata);
+              },
+              error :  function(  jqXHR,  textStatus,  errorThrown ){
+                 alert("error in log web service");
+                 alert("status "+textStatus);
+                 alert("Error thrown "+errorThrown);
+              }
+          }
+      );
+  
+  function renderUserTable(returndata)
+  {
+  	var table = document.getElementById("userTable");
+	
+  	userNode = returndata.getElementsByTagName("userInfo");
+  	for (i=0;i<userNode.length;i++)
+    { 
+        var row = table.insertRow(-1);
+        
+        var idCell  = row.insertCell(0);
+        var nameCell  = row.insertCell(1);
+        var contactNumberCell = row.insertCell(2);
+        var addressCell = row.insertCell(3);
+
+        idCell.innerHTML = i;
+        nameCell.innerHTML = userNode[i].getElementsByTagName("name")[0].childNodes[0].nodeValue;
+        contactNumberCell.innerHTML = userNode[i].getElementsByTagName("number")[0].childNodes[0].nodeValue;
+        addressCell.innerHTML = userNode[i].getElementsByTagName("address")[0].childNodes[0].nodeValue;
+    }
+  }
+  </script>
+  
+</html>
